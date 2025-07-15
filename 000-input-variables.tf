@@ -42,6 +42,12 @@ variable "region" {
   default     = null
 }
 
+variable "availability_zone" {
+  description = "AZ where volume's available."
+  type        = string
+  default     = ""
+}
+
 variable "vendor_options" {
   description = "Vendor-specific options for the attachment, e.g., ignore_volume_confirmation"
   type        = map(bool)
