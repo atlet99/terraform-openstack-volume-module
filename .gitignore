@@ -40,3 +40,9 @@ terraform.rc
 
 # VSCode
 .vscode
+
+# Lock file
+.terraform.lock.hcl
+
+!.terraform-docs.yml
+!.tflint.hcl

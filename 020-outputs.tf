@@ -19,6 +19,31 @@ output "volume_type" {
   value       = openstack_blockstorage_volume_v3.volume.volume_type
 }
 
+output "volume_description" {
+  description = "Description of the created volume"
+  value       = openstack_blockstorage_volume_v3.volume.description
+}
+
+output "volume_metadata" {
+  description = "Metadata key/value pairs associated with the volume"
+  value       = openstack_blockstorage_volume_v3.volume.metadata
+}
+
+output "volume_availability_zone" {
+  description = "Availability zone of the volume"
+  value       = openstack_blockstorage_volume_v3.volume.availability_zone
+}
+
+output "volume_region" {
+  description = "Region of the volume"
+  value       = openstack_blockstorage_volume_v3.volume.region
+}
+
+output "volume_attachment" {
+  description = "Attachment information if the volume is attached to an instance"
+  value       = openstack_blockstorage_volume_v3.volume.attachment
+}
+
 # Outputs for openstack_compute_volume_attach_v2
 output "attachment_ids" {
   description = "List of IDs of the volume attachments"
