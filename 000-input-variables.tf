@@ -1,6 +1,11 @@
 variable "name" {
   description = "Name of the volume"
   type        = string
+
+  validation {
+    condition     = trimspace(var.name) != ""
+    error_message = "name must not be empty."
+  }
 }
 
 variable "size" {
@@ -11,17 +16,32 @@ variable "size" {
 variable "volume_type" {
   description = "Type of the volume"
   type        = string
+
+  validation {
+    condition     = trimspace(var.volume_type) != ""
+    error_message = "volume_type must not be empty."
+  }
 }
 
 variable "instance_id" {
   description = "ID of the instance to attach the volume to"
   type        = string
+
+  validation {
+    condition     = trimspace(var.instance_id) != ""
+    error_message = "instance_id must not be empty."
+  }
 }
 
 variable "device" {
   description = "Device path for attachment (e.g., /dev/vdc)"
   type        = string
   default     = null
+
+  validation {
+    condition     = var.device == null || try(startswith(var.device, "/dev/"), false)
+    error_message = "device must start with /dev/ when set."
+  }
 }
 
 variable "multiattach" {
@@ -50,8 +70,12 @@ variable "availability_zone" {
 
 variable "vendor_options" {
   description = "Vendor-specific options for the attachment, e.g., ignore_volume_confirmation"
-  type        = map(bool)
-  default     = { ignore_volume_confirmation = false }
+  type = object({
+    ignore_volume_confirmation = optional(bool, false)
+  })
+  default = {
+    ignore_volume_confirmation = false
+  }
 }
 
 variable "description" {
@@ -70,6 +94,12 @@ variable "ignore_metadata_changes" {
   description = "Ignore external drift for volume metadata during plan/apply"
   type        = bool
   default     = true
+}
+
+variable "ignore_attachment_device_changes" {
+  description = "Ignore drift for attached device path (some hypervisors may report different device names)"
+  type        = bool
+  default     = false
 }
 
 variable "consistency_group_id" {
@@ -126,7 +156,7 @@ variable "volume_retype_policy" {
   default     = null
 
   validation {
-    condition     = var.volume_retype_policy == null || contains(["never", "on-demand"], lower(var.volume_retype_policy))
+    condition     = var.volume_retype_policy == null || try(contains(["never", "on-demand"], lower(var.volume_retype_policy)), false)
     error_message = "volume_retype_policy must be one of: never, on-demand."
   }
 }

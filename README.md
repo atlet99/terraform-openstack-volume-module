@@ -47,6 +47,7 @@ module "volume-module" {
   description   = "Data volume for application"
   metadata      = { environment = "production" }
   ignore_metadata_changes = true
+  ignore_attachment_device_changes = true
   vendor_options = {
     ignore_volume_confirmation = true
   }
@@ -58,6 +59,12 @@ module "volume-module" {
 By default, metadata drift is ignored (`ignore_metadata_changes = true`) to avoid unnecessary updates when metadata is changed externally (for example, by cloud policies or operators).
 
 Set `ignore_metadata_changes = false` if you need strict reconciliation of `metadata`.
+
+### Attachment Device Drift Handling
+
+On some hypervisors, the actually attached device path may differ from the requested value (for example, `/dev/vdb` vs `/dev/sdb`), which can cause repeated detach/attach plans.
+
+Set `ignore_attachment_device_changes = true` to ignore this drift on `openstack_compute_volume_attach_v2.device`.
 
 ## License
 
@@ -74,14 +81,16 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_openstack"></a> [openstack](#provider\_openstack) | ~> 3.2.0 |
+| <a name="provider_openstack"></a> [openstack](#provider\_openstack) | 3.2.0 |
 
 ## Resources
 
 | Name | Type |
 | ---- | ---- |
 | [openstack_blockstorage_volume_v3.volume](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest/docs/resources/blockstorage_volume_v3) | resource |
+| [openstack_blockstorage_volume_v3.volume_ignore_metadata](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest/docs/resources/blockstorage_volume_v3) | resource |
 | [openstack_compute_volume_attach_v2.va](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest/docs/resources/compute_volume_attach_v2) | resource |
+| [openstack_compute_volume_attach_v2.va_ignore_device](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest/docs/resources/compute_volume_attach_v2) | resource |
 
 ## Inputs
 
@@ -93,6 +102,7 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 | <a name="input_description"></a> [description](#input\_description) | A description of the volume | `string` | `null` | no |
 | <a name="input_device"></a> [device](#input\_device) | Device path for attachment (e.g., /dev/vdc) | `string` | `null` | no |
 | <a name="input_enable_online_resize"></a> [enable\_online\_resize](#input\_enable\_online\_resize) | Allows extending attached volumes | `bool` | `true` | no |
+| <a name="input_ignore_attachment_device_changes"></a> [ignore\_attachment\_device\_changes](#input\_ignore\_attachment\_device\_changes) | Ignore drift for attached device path (some hypervisors may report different device names) | `bool` | `false` | no |
 | <a name="input_ignore_metadata_changes"></a> [ignore\_metadata\_changes](#input\_ignore\_metadata\_changes) | Ignore external drift for volume metadata during plan/apply | `bool` | `true` | no |
 | <a name="input_image_id"></a> [image\_id](#input\_image\_id) | The image ID from which to create the volume | `string` | `null` | no |
 | <a name="input_instance_id"></a> [instance\_id](#input\_instance\_id) | ID of the instance to attach the volume to | `string` | n/a | yes |
@@ -106,7 +116,7 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 | <a name="input_source_replica"></a> [source\_replica](#input\_source\_replica) | The volume ID to replicate with | `string` | `null` | no |
 | <a name="input_source_vol_id"></a> [source\_vol\_id](#input\_source\_vol\_id) | The volume ID from which to create the volume | `string` | `null` | no |
 | <a name="input_tag"></a> [tag](#input\_tag) | Tag for the attached device | `string` | `null` | no |
-| <a name="input_vendor_options"></a> [vendor\_options](#input\_vendor\_options) | Vendor-specific options for the attachment, e.g., ignore\_volume\_confirmation | `map(bool)` | <pre>{<br/>  "ignore_volume_confirmation": false<br/>}</pre> | no |
+| <a name="input_vendor_options"></a> [vendor\_options](#input\_vendor\_options) | Vendor-specific options for the attachment, e.g., ignore\_volume\_confirmation | <pre>object({<br/>    ignore_volume_confirmation = optional(bool, false)<br/>  })</pre> | <pre>{<br/>  "ignore_volume_confirmation": false<br/>}</pre> | no |
 | <a name="input_volume_retype_policy"></a> [volume\_retype\_policy](#input\_volume\_retype\_policy) | Migration policy when changing volume\_type | `string` | `null` | no |
 | <a name="input_volume_type"></a> [volume\_type](#input\_volume\_type) | Type of the volume | `string` | n/a | yes |
 

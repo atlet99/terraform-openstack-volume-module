@@ -43,6 +43,12 @@ variable "ignore_metadata_changes" {
   default     = true
 }
 
+variable "ignore_attachment_device_changes" {
+  description = "Ignore drift for attached device path"
+  type        = bool
+  default     = false
+}
+
 variable "availability_zone" {
   description = "AZ where volume is available"
   type        = string
@@ -129,7 +135,9 @@ variable "tag" {
 
 variable "vendor_options" {
   description = "Vendor-specific options for the attachment"
-  type        = map(bool)
+  type = object({
+    ignore_volume_confirmation = optional(bool, false)
+  })
   default = {
     ignore_volume_confirmation = false
   }
