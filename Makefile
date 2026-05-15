@@ -93,9 +93,13 @@ docs: check-deps ## Generate documentation with terraform-docs
 	terraform-docs .
 
 docs-check: check-deps ## Verify README is in sync with terraform-docs
-	@before="$$(shasum README.md | awk '{print $$1}')"; \
-	terraform-docs .; \
+	@tmp="$$(mktemp)"; \
+	cp README.md "$$tmp"; \
+	before="$$(shasum README.md | awk '{print $$1}')"; \
+	terraform-docs . >/dev/null; \
 	after="$$(shasum README.md | awk '{print $$1}')"; \
+	cp "$$tmp" README.md; \
+	rm -f "$$tmp"; \
 	if [ "$$before" != "$$after" ]; then \
 		echo "ERROR: README.md is not up to date. Run 'make docs' and commit the changes."; \
 		exit 1; \

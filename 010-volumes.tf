@@ -5,7 +5,7 @@ resource "openstack_blockstorage_volume_v3" "volume" {
   volume_type          = var.volume_type
   enable_online_resize = var.enable_online_resize
   region               = var.region == null ? null : var.region
-  availability_zone    = var.availability_zone == "" ? null : var.availability_zone
+  availability_zone    = var.availability_zone
   description          = var.description
   metadata             = var.metadata
   consistency_group_id = var.consistency_group_id
@@ -19,12 +19,17 @@ resource "openstack_blockstorage_volume_v3" "volume" {
   dynamic "scheduler_hints" {
     for_each = var.scheduler_hints
     content {
-      different_host        = lookup(scheduler_hints.value, "different_host", null)
-      same_host             = lookup(scheduler_hints.value, "same_host", null)
-      local_to_instance     = lookup(scheduler_hints.value, "local_to_instance", null)
-      query                 = lookup(scheduler_hints.value, "query", null)
-      additional_properties = lookup(scheduler_hints.value, "additional_properties", null)
+      different_host        = try(scheduler_hints.value.different_host, null)
+      same_host             = try(scheduler_hints.value.same_host, null)
+      local_to_instance     = try(scheduler_hints.value.local_to_instance, null)
+      query                 = try(scheduler_hints.value.query, null)
+      additional_properties = try(scheduler_hints.value.additional_properties, null)
     }
+  }
+
+  timeouts {
+    create = var.volume_create_timeout
+    delete = var.volume_delete_timeout
   }
 
   lifecycle {
@@ -42,6 +47,11 @@ resource "openstack_blockstorage_volume_v3" "volume" {
       ])) <= 1
       error_message = "Only one of snapshot_id, source_vol_id, image_id, backup_id can be set."
     }
+
+    precondition {
+      condition     = !var.multiattach || trimspace(var.volume_type) != ""
+      error_message = "When multiattach is enabled, volume_type must be explicitly set to a multiattach-capable Cinder volume type."
+    }
   }
 }
 
@@ -52,7 +62,7 @@ resource "openstack_blockstorage_volume_v3" "volume_ignore_metadata" {
   volume_type          = var.volume_type
   enable_online_resize = var.enable_online_resize
   region               = var.region == null ? null : var.region
-  availability_zone    = var.availability_zone == "" ? null : var.availability_zone
+  availability_zone    = var.availability_zone
   description          = var.description
   metadata             = var.metadata
   consistency_group_id = var.consistency_group_id
@@ -66,12 +76,17 @@ resource "openstack_blockstorage_volume_v3" "volume_ignore_metadata" {
   dynamic "scheduler_hints" {
     for_each = var.scheduler_hints
     content {
-      different_host        = lookup(scheduler_hints.value, "different_host", null)
-      same_host             = lookup(scheduler_hints.value, "same_host", null)
-      local_to_instance     = lookup(scheduler_hints.value, "local_to_instance", null)
-      query                 = lookup(scheduler_hints.value, "query", null)
-      additional_properties = lookup(scheduler_hints.value, "additional_properties", null)
+      different_host        = try(scheduler_hints.value.different_host, null)
+      same_host             = try(scheduler_hints.value.same_host, null)
+      local_to_instance     = try(scheduler_hints.value.local_to_instance, null)
+      query                 = try(scheduler_hints.value.query, null)
+      additional_properties = try(scheduler_hints.value.additional_properties, null)
     }
+  }
+
+  timeouts {
+    create = var.volume_create_timeout
+    delete = var.volume_delete_timeout
   }
 
   lifecycle {
@@ -90,6 +105,11 @@ resource "openstack_blockstorage_volume_v3" "volume_ignore_metadata" {
         var.backup_id,
       ])) <= 1
       error_message = "Only one of snapshot_id, source_vol_id, image_id, backup_id can be set."
+    }
+
+    precondition {
+      condition     = !var.multiattach || trimspace(var.volume_type) != ""
+      error_message = "When multiattach is enabled, volume_type must be explicitly set to a multiattach-capable Cinder volume type."
     }
   }
 }
@@ -114,6 +134,10 @@ resource "openstack_compute_volume_attach_v2" "va" {
     ignore_volume_confirmation = var.vendor_options.ignore_volume_confirmation
   }
 
+  timeouts {
+    create = var.attachment_create_timeout
+    delete = var.attachment_delete_timeout
+  }
 }
 
 resource "openstack_compute_volume_attach_v2" "va_ignore_device" {
@@ -127,6 +151,11 @@ resource "openstack_compute_volume_attach_v2" "va_ignore_device" {
 
   vendor_options {
     ignore_volume_confirmation = var.vendor_options.ignore_volume_confirmation
+  }
+
+  timeouts {
+    create = var.attachment_create_timeout
+    delete = var.attachment_delete_timeout
   }
 
   lifecycle {

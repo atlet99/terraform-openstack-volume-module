@@ -69,3 +69,23 @@ output "multiattach_enabled_list" {
   description = "List indicating if multiattach is enabled for each volume attachment"
   value       = concat(openstack_compute_volume_attach_v2.va[*].multiattach, openstack_compute_volume_attach_v2.va_ignore_device[*].multiattach)
 }
+
+output "attachment_id" {
+  description = "ID of the volume attachment"
+  value       = one(concat(openstack_compute_volume_attach_v2.va[*].id, openstack_compute_volume_attach_v2.va_ignore_device[*].id))
+}
+
+output "attached_instance_id" {
+  description = "ID of the instance to which the volume is attached"
+  value       = one(concat(openstack_compute_volume_attach_v2.va[*].instance_id, openstack_compute_volume_attach_v2.va_ignore_device[*].instance_id))
+}
+
+output "attached_volume_id" {
+  description = "ID of the attached volume"
+  value       = one(concat(openstack_compute_volume_attach_v2.va[*].volume_id, openstack_compute_volume_attach_v2.va_ignore_device[*].volume_id))
+}
+
+output "attached_device" {
+  description = "Device path of the attached volume (depends on the hypervisor)"
+  value       = one(concat(openstack_compute_volume_attach_v2.va[*].device, openstack_compute_volume_attach_v2.va_ignore_device[*].device))
+}

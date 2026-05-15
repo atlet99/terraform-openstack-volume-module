@@ -54,18 +54,33 @@ variable "tag" {
   description = "Tag for the attached device"
   type        = string
   default     = null
+
+  validation {
+    condition     = var.tag == null || trimspace(var.tag) != ""
+    error_message = "tag must not be empty when set."
+  }
 }
 
 variable "region" {
   description = "Region for the Compute client"
   type        = string
   default     = null
+
+  validation {
+    condition     = var.region == null || trimspace(var.region) != ""
+    error_message = "region must not be empty when set."
+  }
 }
 
 variable "availability_zone" {
   description = "AZ where volume's available."
   type        = string
-  default     = ""
+  default     = null
+
+  validation {
+    condition     = var.availability_zone == null || trimspace(var.availability_zone) != ""
+    error_message = "availability_zone must not be empty when set."
+  }
 }
 
 variable "vendor_options" {
@@ -146,8 +161,14 @@ variable "enable_online_resize" {
 
 variable "scheduler_hints" {
   description = "Hints for Cinder scheduler"
-  type        = list(map(string))
-  default     = []
+  type = set(object({
+    different_host        = optional(list(string))
+    same_host             = optional(list(string))
+    local_to_instance     = optional(string)
+    query                 = optional(string)
+    additional_properties = optional(map(string))
+  }))
+  default = []
 }
 
 variable "volume_retype_policy" {
@@ -159,4 +180,28 @@ variable "volume_retype_policy" {
     condition     = var.volume_retype_policy == null || try(contains(["never", "on-demand"], lower(var.volume_retype_policy)), false)
     error_message = "volume_retype_policy must be one of: never, on-demand."
   }
+}
+
+variable "volume_create_timeout" {
+  description = "Timeout for volume creation operation (e.g., 10m, 30m)"
+  type        = string
+  default     = "10m"
+}
+
+variable "volume_delete_timeout" {
+  description = "Timeout for volume deletion operation (e.g., 10m, 30m)"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_create_timeout" {
+  description = "Timeout for volume attachment operation (e.g., 10m, 30m)"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_delete_timeout" {
+  description = "Timeout for volume detachment operation (e.g., 10m, 30m)"
+  type        = string
+  default     = "10m"
 }

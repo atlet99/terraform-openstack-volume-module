@@ -23,6 +23,10 @@ module "complete_volume" {
   enable_online_resize             = var.enable_online_resize
   volume_retype_policy             = var.volume_retype_policy
   scheduler_hints                  = var.scheduler_hints
+  volume_create_timeout            = var.volume_create_timeout
+  volume_delete_timeout            = var.volume_delete_timeout
+  attachment_create_timeout        = var.attachment_create_timeout
+  attachment_delete_timeout        = var.attachment_delete_timeout
 
   # Attachment options
   device         = var.device

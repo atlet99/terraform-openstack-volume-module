@@ -66,6 +66,11 @@ On some hypervisors, the actually attached device path may differ from the reque
 
 Set `ignore_attachment_device_changes = true` to ignore this drift on `openstack_compute_volume_attach_v2.device`.
 
+### Provider Microversion Notes
+
+- `tag` on attachment requires Nova microversion `2.49+`.
+- `backup_id` for volume-from-backup requires Cinder microversion `3.47+`.
+
 ## License
 
 This is an open source project under the [MIT](https://github.com/atlet99/terraform-openstack-volume-module/blob/master/LICENSE) license.
@@ -96,7 +101,9 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | AZ where volume's available. | `string` | `""` | no |
+| <a name="input_attachment_create_timeout"></a> [attachment\_create\_timeout](#input\_attachment\_create\_timeout) | Timeout for volume attachment operation (e.g., 10m, 30m) | `string` | `"10m"` | no |
+| <a name="input_attachment_delete_timeout"></a> [attachment\_delete\_timeout](#input\_attachment\_delete\_timeout) | Timeout for volume detachment operation (e.g., 10m, 30m) | `string` | `"10m"` | no |
+| <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | AZ where volume's available. | `string` | `null` | no |
 | <a name="input_backup_id"></a> [backup\_id](#input\_backup\_id) | The backup ID from which to create the volume | `string` | `null` | no |
 | <a name="input_consistency_group_id"></a> [consistency\_group\_id](#input\_consistency\_group\_id) | The consistency group to place the volume in | `string` | `null` | no |
 | <a name="input_description"></a> [description](#input\_description) | A description of the volume | `string` | `null` | no |
@@ -110,13 +117,15 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 | <a name="input_multiattach"></a> [multiattach](#input\_multiattach) | Flag to enable multiattach | `bool` | `false` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the volume | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region for the Compute client | `string` | `null` | no |
-| <a name="input_scheduler_hints"></a> [scheduler\_hints](#input\_scheduler\_hints) | Hints for Cinder scheduler | `list(map(string))` | `[]` | no |
+| <a name="input_scheduler_hints"></a> [scheduler\_hints](#input\_scheduler\_hints) | Hints for Cinder scheduler | <pre>set(object({<br/>    different_host        = optional(list(string))<br/>    same_host             = optional(list(string))<br/>    local_to_instance     = optional(string)<br/>    query                 = optional(string)<br/>    additional_properties = optional(map(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_size"></a> [size](#input\_size) | Size of the volume in GB | `number` | n/a | yes |
 | <a name="input_snapshot_id"></a> [snapshot\_id](#input\_snapshot\_id) | The snapshot ID from which to create the volume | `string` | `null` | no |
 | <a name="input_source_replica"></a> [source\_replica](#input\_source\_replica) | The volume ID to replicate with | `string` | `null` | no |
 | <a name="input_source_vol_id"></a> [source\_vol\_id](#input\_source\_vol\_id) | The volume ID from which to create the volume | `string` | `null` | no |
 | <a name="input_tag"></a> [tag](#input\_tag) | Tag for the attached device | `string` | `null` | no |
 | <a name="input_vendor_options"></a> [vendor\_options](#input\_vendor\_options) | Vendor-specific options for the attachment, e.g., ignore\_volume\_confirmation | <pre>object({<br/>    ignore_volume_confirmation = optional(bool, false)<br/>  })</pre> | <pre>{<br/>  "ignore_volume_confirmation": false<br/>}</pre> | no |
+| <a name="input_volume_create_timeout"></a> [volume\_create\_timeout](#input\_volume\_create\_timeout) | Timeout for volume creation operation (e.g., 10m, 30m) | `string` | `"10m"` | no |
+| <a name="input_volume_delete_timeout"></a> [volume\_delete\_timeout](#input\_volume\_delete\_timeout) | Timeout for volume deletion operation (e.g., 10m, 30m) | `string` | `"10m"` | no |
 | <a name="input_volume_retype_policy"></a> [volume\_retype\_policy](#input\_volume\_retype\_policy) | Migration policy when changing volume\_type | `string` | `null` | no |
 | <a name="input_volume_type"></a> [volume\_type](#input\_volume\_type) | Type of the volume | `string` | n/a | yes |
 
@@ -124,9 +133,13 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 
 | Name | Description |
 | ---- | ----------- |
+| <a name="output_attached_device"></a> [attached\_device](#output\_attached\_device) | Device path of the attached volume (depends on the hypervisor) |
 | <a name="output_attached_devices"></a> [attached\_devices](#output\_attached\_devices) | List of device paths for the attached volumes (depends on the hypervisor) |
+| <a name="output_attached_instance_id"></a> [attached\_instance\_id](#output\_attached\_instance\_id) | ID of the instance to which the volume is attached |
 | <a name="output_attached_instance_ids"></a> [attached\_instance\_ids](#output\_attached\_instance\_ids) | List of IDs of the instances to which the volumes are attached |
+| <a name="output_attached_volume_id"></a> [attached\_volume\_id](#output\_attached\_volume\_id) | ID of the attached volume |
 | <a name="output_attached_volume_ids"></a> [attached\_volume\_ids](#output\_attached\_volume\_ids) | List of IDs of the attached volumes |
+| <a name="output_attachment_id"></a> [attachment\_id](#output\_attachment\_id) | ID of the volume attachment |
 | <a name="output_attachment_ids"></a> [attachment\_ids](#output\_attachment\_ids) | List of IDs of the volume attachments |
 | <a name="output_multiattach_enabled_list"></a> [multiattach\_enabled\_list](#output\_multiattach\_enabled\_list) | List indicating if multiattach is enabled for each volume attachment |
 | <a name="output_volume_attachment"></a> [volume\_attachment](#output\_volume\_attachment) | Attachment information if the volume is attached to an instance |

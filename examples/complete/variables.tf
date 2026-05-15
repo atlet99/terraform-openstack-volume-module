@@ -52,7 +52,7 @@ variable "ignore_attachment_device_changes" {
 variable "availability_zone" {
   description = "AZ where volume is available"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "region" {
@@ -111,8 +111,14 @@ variable "volume_retype_policy" {
 
 variable "scheduler_hints" {
   description = "Hints for Cinder scheduler"
-  type        = list(map(string))
-  default     = []
+  type = set(object({
+    different_host        = optional(list(string))
+    same_host             = optional(list(string))
+    local_to_instance     = optional(string)
+    query                 = optional(string)
+    additional_properties = optional(map(string))
+  }))
+  default = []
 }
 
 variable "device" {
@@ -141,4 +147,28 @@ variable "vendor_options" {
   default = {
     ignore_volume_confirmation = false
   }
+}
+
+variable "volume_create_timeout" {
+  description = "Timeout for volume creation operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "volume_delete_timeout" {
+  description = "Timeout for volume deletion operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_create_timeout" {
+  description = "Timeout for volume attachment operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_delete_timeout" {
+  description = "Timeout for volume detachment operation"
+  type        = string
+  default     = "10m"
 }
