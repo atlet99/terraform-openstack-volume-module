@@ -20,7 +20,7 @@ The following examples demonstrate how to use the module with required and optio
 ```hcl
 module "volume-module" {
   source  = "atlet99/volume-module/openstack"
-  version = "1.0.3"
+  version = "1.0.4"
   
   name        = "example-volume"
   size        = 10
@@ -34,7 +34,7 @@ module "volume-module" {
 ```hcl
 module "volume-module" {
   source  = "atlet99/volume-module/openstack"
-  version = "1.0.3"
+  version = "1.0.4"
 
   name          = "example-volume"
   size          = 10
@@ -59,7 +59,7 @@ module "volume-module" {
 ```hcl
 module "volume-module" {
   source  = "atlet99/volume-module/openstack"
-  version = "1.0.3"
+  version = "1.0.4"
 
   create_volume      = false
   existing_volume_id = "existing-volume-uuid"

@@ -5,11 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-05-15
+
+### Added
+
+- [FEATURE] - add lifecycle management, metadata drift handling, and validation rules;
+- [FEATURE] - add input validations, device drift handling, and refactor build scripts;
+- [ADD] - validation rules, configurable timeouts, and improve type safety;
+- [FEATURE] - add support for attaching existing volumes and conditional create/attach;
+
+### Changed
+
+- [REFACTOR] - move cross-variable validations from variable blocks to dedicated check blocks;
+
 ## [1.0.3] - 2026-03-10
 
 ### Changed
 
 - [DOCS] - add usage examples
+- Release v1.0.3
 
 ## [1.0.2] - 2026-03-10
 
@@ -25,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2024-11-09
 
+[1.0.4]: https://github.com/atlet99/terraform-openstack-volume-module/compare/v1.0.3..v1.0.4
 [1.0.3]: https://github.com/atlet99/terraform-openstack-volume-module/compare/v1.0.2..v1.0.3
 [1.0.2]: https://github.com/atlet99/terraform-openstack-volume-module/compare/v1.0.1..v1.0.2
 [1.0.1]: https://github.com/atlet99/terraform-openstack-volume-module/compare/v1.0.0..v1.0.1
