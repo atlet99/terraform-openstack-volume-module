@@ -4,8 +4,8 @@ variable "name" {
   default     = null
 
   validation {
-    condition     = !var.create_volume || (var.name != null && try(trimspace(var.name) != "", false))
-    error_message = "name must not be empty when create_volume is true."
+    condition     = var.name == null || try(trimspace(var.name) != "", false)
+    error_message = "name must not be empty when set."
   }
 }
 
@@ -15,8 +15,8 @@ variable "size" {
   default     = null
 
   validation {
-    condition     = !var.create_volume || (var.size != null && var.size > 0)
-    error_message = "size must be greater than 0 when create_volume is true."
+    condition     = var.size == null || var.size > 0
+    error_message = "size must be greater than 0 when set."
   }
 }
 
@@ -37,8 +37,8 @@ variable "instance_id" {
   default     = null
 
   validation {
-    condition     = !var.attachment_enabled || (var.instance_id != null && try(trimspace(var.instance_id) != "", false))
-    error_message = "instance_id must not be empty when attachment_enabled is true."
+    condition     = var.instance_id == null || try(trimspace(var.instance_id) != "", false)
+    error_message = "instance_id must not be empty when set."
   }
 }
 
@@ -54,8 +54,8 @@ variable "existing_volume_id" {
   default     = null
 
   validation {
-    condition     = var.create_volume || (var.existing_volume_id != null && try(trimspace(var.existing_volume_id) != "", false))
-    error_message = "existing_volume_id must be set when create_volume is false."
+    condition     = var.existing_volume_id == null || try(trimspace(var.existing_volume_id) != "", false)
+    error_message = "existing_volume_id must not be empty when set."
   }
 }
 
