@@ -12,3 +12,8 @@ output "attachment_ids" {
   description = "List of IDs of the volume attachments"
   value       = module.simple_volume.attachment_ids
 }
+
+output "attachment_id" {
+  description = "ID of the volume attachment"
+  value       = module.simple_volume.attachment_id
+}

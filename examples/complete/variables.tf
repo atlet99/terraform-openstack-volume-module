@@ -22,6 +22,18 @@ variable "instance_id" {
   default     = "your-instance-uuid"
 }
 
+variable "create_volume" {
+  description = "Whether to create a new volume"
+  type        = bool
+  default     = true
+}
+
+variable "existing_volume_id" {
+  description = "Existing volume ID when create_volume is false"
+  type        = string
+  default     = null
+}
+
 variable "description" {
   description = "A description of the volume"
   type        = string
@@ -37,10 +49,22 @@ variable "metadata" {
   }
 }
 
+variable "ignore_metadata_changes" {
+  description = "Ignore external drift for volume metadata during plan/apply"
+  type        = bool
+  default     = true
+}
+
+variable "ignore_attachment_device_changes" {
+  description = "Ignore drift for attached device path"
+  type        = bool
+  default     = false
+}
+
 variable "availability_zone" {
   description = "AZ where volume is available"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "region" {
@@ -99,8 +123,14 @@ variable "volume_retype_policy" {
 
 variable "scheduler_hints" {
   description = "Hints for Cinder scheduler"
-  type        = list(map(string))
-  default     = []
+  type = set(object({
+    different_host        = optional(list(string))
+    same_host             = optional(list(string))
+    local_to_instance     = optional(string)
+    query                 = optional(string)
+    additional_properties = optional(map(string))
+  }))
+  default = []
 }
 
 variable "device" {
@@ -123,8 +153,40 @@ variable "tag" {
 
 variable "vendor_options" {
   description = "Vendor-specific options for the attachment"
-  type        = map(bool)
+  type = object({
+    ignore_volume_confirmation = optional(bool, false)
+  })
   default = {
     ignore_volume_confirmation = false
   }
+}
+
+variable "volume_create_timeout" {
+  description = "Timeout for volume creation operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "volume_delete_timeout" {
+  description = "Timeout for volume deletion operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_create_timeout" {
+  description = "Timeout for volume attachment operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_delete_timeout" {
+  description = "Timeout for volume detachment operation"
+  type        = string
+  default     = "10m"
+}
+
+variable "attachment_enabled" {
+  description = "Whether to attach the volume to the instance"
+  type        = bool
+  default     = true
 }

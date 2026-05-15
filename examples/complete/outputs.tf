@@ -48,6 +48,11 @@ output "attachment_ids" {
   value       = module.complete_volume.attachment_ids
 }
 
+output "attachment_id" {
+  description = "ID of the volume attachment"
+  value       = module.complete_volume.attachment_id
+}
+
 output "attached_instance_ids" {
   description = "List of IDs of the instances to which the volumes are attached"
   value       = module.complete_volume.attached_instance_ids
@@ -56,6 +61,11 @@ output "attached_instance_ids" {
 output "attached_devices" {
   description = "List of device paths for the attached volumes"
   value       = module.complete_volume.attached_devices
+}
+
+output "attached_device" {
+  description = "Device path of the attached volume"
+  value       = module.complete_volume.attached_device
 }
 
 output "multiattach_enabled_list" {

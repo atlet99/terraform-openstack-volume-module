@@ -17,7 +17,7 @@ terraform apply
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
 | <a name="requirement_openstack"></a> [openstack](#requirement\_openstack) | >= 3.2.0 |
 
@@ -28,7 +28,7 @@ No providers.
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_simple_volume"></a> [simple\_volume](#module\_simple\_volume) | ../../ | n/a |
 
 ## Resources
@@ -42,7 +42,8 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
+| <a name="output_attachment_id"></a> [attachment\_id](#output\_attachment\_id) | ID of the volume attachment |
 | <a name="output_attachment_ids"></a> [attachment\_ids](#output\_attachment\_ids) | List of IDs of the volume attachments |
 | <a name="output_volume_id"></a> [volume\_id](#output\_volume\_id) | ID of the created volume |
 | <a name="output_volume_name"></a> [volume\_name](#output\_volume\_name) | Name of the created volume |
