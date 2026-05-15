@@ -2,10 +2,12 @@ module "complete_volume" {
   source = "../../"
 
   # Required
-  name        = var.name
-  size        = var.size
-  volume_type = var.volume_type
-  instance_id = var.instance_id
+  name               = var.name
+  size               = var.size
+  volume_type        = var.volume_type
+  instance_id        = var.instance_id
+  create_volume      = var.create_volume
+  existing_volume_id = var.existing_volume_id
 
   # Volume options
   description                      = var.description
@@ -27,6 +29,7 @@ module "complete_volume" {
   volume_delete_timeout            = var.volume_delete_timeout
   attachment_create_timeout        = var.attachment_create_timeout
   attachment_delete_timeout        = var.attachment_delete_timeout
+  attachment_enabled               = var.attachment_enabled
 
   # Attachment options
   device         = var.device

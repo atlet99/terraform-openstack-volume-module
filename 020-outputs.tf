@@ -1,47 +1,52 @@
 # Outputs for openstack_blockstorage_volume_v3
 output "volume_id" {
   description = "ID of the created volume"
-  value       = local.volume.id
+  value       = try(local.created_volume.id, null)
+}
+
+output "effective_volume_id" {
+  description = "Effective volume ID used by the module (created or existing)"
+  value       = local.volume_id_for_attach
 }
 
 output "volume_name" {
   description = "Name of the created volume"
-  value       = local.volume.name
+  value       = try(local.created_volume.name, null)
 }
 
 output "volume_size" {
   description = "Size of the volume in GB"
-  value       = local.volume.size
+  value       = try(local.created_volume.size, null)
 }
 
 output "volume_type" {
   description = "Type of the volume"
-  value       = local.volume.volume_type
+  value       = try(local.created_volume.volume_type, null)
 }
 
 output "volume_description" {
   description = "Description of the created volume"
-  value       = local.volume.description
+  value       = try(local.created_volume.description, null)
 }
 
 output "volume_metadata" {
   description = "Metadata key/value pairs associated with the volume"
-  value       = local.volume.metadata
+  value       = try(local.created_volume.metadata, null)
 }
 
 output "volume_availability_zone" {
   description = "Availability zone of the volume"
-  value       = local.volume.availability_zone
+  value       = try(local.created_volume.availability_zone, null)
 }
 
 output "volume_region" {
   description = "Region of the volume"
-  value       = local.volume.region
+  value       = try(local.created_volume.region, null)
 }
 
 output "volume_attachment" {
   description = "Attachment information if the volume is attached to an instance"
-  value       = local.volume.attachment
+  value       = try(local.created_volume.attachment, [])
 }
 
 # Outputs for openstack_compute_volume_attach_v2

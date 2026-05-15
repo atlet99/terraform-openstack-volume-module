@@ -1,5 +1,5 @@
 resource "openstack_blockstorage_volume_v3" "volume" {
-  count                = var.ignore_metadata_changes ? 0 : 1
+  count                = var.create_volume && !var.ignore_metadata_changes ? 1 : 0
   name                 = var.name
   size                 = var.size
   volume_type          = var.volume_type
@@ -14,6 +14,7 @@ resource "openstack_blockstorage_volume_v3" "volume" {
   source_vol_id        = var.source_vol_id
   image_id             = var.image_id
   backup_id            = var.backup_id
+  # backup_id requires Cinder Block Storage microversion 3.47+.
   volume_retype_policy = var.volume_retype_policy == null ? null : lower(var.volume_retype_policy)
 
   dynamic "scheduler_hints" {
@@ -49,14 +50,14 @@ resource "openstack_blockstorage_volume_v3" "volume" {
     }
 
     precondition {
-      condition     = !var.multiattach || trimspace(var.volume_type) != ""
+      condition     = !var.multiattach || try(trimspace(var.volume_type) != "", false)
       error_message = "When multiattach is enabled, volume_type must be explicitly set to a multiattach-capable Cinder volume type."
     }
   }
 }
 
 resource "openstack_blockstorage_volume_v3" "volume_ignore_metadata" {
-  count                = var.ignore_metadata_changes ? 1 : 0
+  count                = var.create_volume && var.ignore_metadata_changes ? 1 : 0
   name                 = var.name
   size                 = var.size
   volume_type          = var.volume_type
@@ -71,6 +72,7 @@ resource "openstack_blockstorage_volume_v3" "volume_ignore_metadata" {
   source_vol_id        = var.source_vol_id
   image_id             = var.image_id
   backup_id            = var.backup_id
+  # backup_id requires Cinder Block Storage microversion 3.47+.
   volume_retype_policy = var.volume_retype_policy == null ? null : lower(var.volume_retype_policy)
 
   dynamic "scheduler_hints" {
@@ -108,27 +110,33 @@ resource "openstack_blockstorage_volume_v3" "volume_ignore_metadata" {
     }
 
     precondition {
-      condition     = !var.multiattach || trimspace(var.volume_type) != ""
+      condition     = !var.multiattach || try(trimspace(var.volume_type) != "", false)
       error_message = "When multiattach is enabled, volume_type must be explicitly set to a multiattach-capable Cinder volume type."
     }
   }
 }
 
 locals {
-  volume = one(concat(
+  created_volume = length(concat(
     openstack_blockstorage_volume_v3.volume[*],
     openstack_blockstorage_volume_v3.volume_ignore_metadata[*]
-  ))
+    )) > 0 ? one(concat(
+    openstack_blockstorage_volume_v3.volume[*],
+    openstack_blockstorage_volume_v3.volume_ignore_metadata[*]
+  )) : null
+
+  volume_id_for_attach = var.create_volume ? local.created_volume.id : var.existing_volume_id
 }
 
 resource "openstack_compute_volume_attach_v2" "va" {
-  count       = var.ignore_attachment_device_changes ? 0 : 1
+  count       = var.attachment_enabled && !var.ignore_attachment_device_changes ? 1 : 0
   instance_id = var.instance_id
-  volume_id   = local.volume.id
+  volume_id   = local.volume_id_for_attach
   device      = var.device
   multiattach = var.multiattach
   tag         = var.tag
-  region      = var.region
+  # tag requires Nova microversion 2.49+.
+  region = var.region
 
   vendor_options {
     ignore_volume_confirmation = var.vendor_options.ignore_volume_confirmation
@@ -141,13 +149,14 @@ resource "openstack_compute_volume_attach_v2" "va" {
 }
 
 resource "openstack_compute_volume_attach_v2" "va_ignore_device" {
-  count       = var.ignore_attachment_device_changes ? 1 : 0
+  count       = var.attachment_enabled && var.ignore_attachment_device_changes ? 1 : 0
   instance_id = var.instance_id
-  volume_id   = local.volume.id
+  volume_id   = local.volume_id_for_attach
   device      = var.device
   multiattach = var.multiattach
   tag         = var.tag
-  region      = var.region
+  # tag requires Nova microversion 2.49+.
+  region = var.region
 
   vendor_options {
     ignore_volume_confirmation = var.vendor_options.ignore_volume_confirmation

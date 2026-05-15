@@ -1,35 +1,61 @@
 variable "name" {
   description = "Name of the volume"
   type        = string
+  default     = null
 
   validation {
-    condition     = trimspace(var.name) != ""
-    error_message = "name must not be empty."
+    condition     = !var.create_volume || (var.name != null && try(trimspace(var.name) != "", false))
+    error_message = "name must not be empty when create_volume is true."
   }
 }
 
 variable "size" {
   description = "Size of the volume in GB"
   type        = number
+  default     = null
+
+  validation {
+    condition     = !var.create_volume || (var.size != null && var.size > 0)
+    error_message = "size must be greater than 0 when create_volume is true."
+  }
 }
 
 variable "volume_type" {
   description = "Type of the volume"
   type        = string
+  default     = null
 
   validation {
-    condition     = trimspace(var.volume_type) != ""
-    error_message = "volume_type must not be empty."
+    condition     = var.volume_type == null || try(trimspace(var.volume_type) != "", false)
+    error_message = "volume_type must not be empty when set."
   }
 }
 
 variable "instance_id" {
   description = "ID of the instance to attach the volume to"
   type        = string
+  default     = null
 
   validation {
-    condition     = trimspace(var.instance_id) != ""
-    error_message = "instance_id must not be empty."
+    condition     = !var.attachment_enabled || (var.instance_id != null && try(trimspace(var.instance_id) != "", false))
+    error_message = "instance_id must not be empty when attachment_enabled is true."
+  }
+}
+
+variable "create_volume" {
+  description = "Whether to create a new volume. If false, existing_volume_id must be set."
+  type        = bool
+  default     = true
+}
+
+variable "existing_volume_id" {
+  description = "Existing volume ID to attach when create_volume is false"
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.create_volume || (var.existing_volume_id != null && try(trimspace(var.existing_volume_id) != "", false))
+    error_message = "existing_volume_id must be set when create_volume is false."
   }
 }
 
@@ -56,7 +82,7 @@ variable "tag" {
   default     = null
 
   validation {
-    condition     = var.tag == null || trimspace(var.tag) != ""
+    condition     = var.tag == null || try(trimspace(var.tag) != "", false)
     error_message = "tag must not be empty when set."
   }
 }
@@ -67,7 +93,7 @@ variable "region" {
   default     = null
 
   validation {
-    condition     = var.region == null || trimspace(var.region) != ""
+    condition     = var.region == null || try(trimspace(var.region) != "", false)
     error_message = "region must not be empty when set."
   }
 }
@@ -78,7 +104,7 @@ variable "availability_zone" {
   default     = null
 
   validation {
-    condition     = var.availability_zone == null || trimspace(var.availability_zone) != ""
+    condition     = var.availability_zone == null || try(trimspace(var.availability_zone) != "", false)
     error_message = "availability_zone must not be empty when set."
   }
 }
@@ -103,6 +129,11 @@ variable "metadata" {
   description = "Metadata key/value pairs to associate with the volume"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for k in keys(var.metadata) : trimspace(k) != ""])
+    error_message = "metadata keys must not be empty."
+  }
 }
 
 variable "ignore_metadata_changes" {
@@ -186,22 +217,48 @@ variable "volume_create_timeout" {
   description = "Timeout for volume creation operation (e.g., 10m, 30m)"
   type        = string
   default     = "10m"
+
+  validation {
+    condition     = can(regex("^[0-9]+(s|m|h)$", var.volume_create_timeout))
+    error_message = "volume_create_timeout must match ^[0-9]+(s|m|h)$, for example 30s, 10m, 1h."
+  }
 }
 
 variable "volume_delete_timeout" {
   description = "Timeout for volume deletion operation (e.g., 10m, 30m)"
   type        = string
   default     = "10m"
+
+  validation {
+    condition     = can(regex("^[0-9]+(s|m|h)$", var.volume_delete_timeout))
+    error_message = "volume_delete_timeout must match ^[0-9]+(s|m|h)$, for example 30s, 10m, 1h."
+  }
 }
 
 variable "attachment_create_timeout" {
   description = "Timeout for volume attachment operation (e.g., 10m, 30m)"
   type        = string
   default     = "10m"
+
+  validation {
+    condition     = can(regex("^[0-9]+(s|m|h)$", var.attachment_create_timeout))
+    error_message = "attachment_create_timeout must match ^[0-9]+(s|m|h)$, for example 30s, 10m, 1h."
+  }
 }
 
 variable "attachment_delete_timeout" {
   description = "Timeout for volume detachment operation (e.g., 10m, 30m)"
   type        = string
   default     = "10m"
+
+  validation {
+    condition     = can(regex("^[0-9]+(s|m|h)$", var.attachment_delete_timeout))
+    error_message = "attachment_delete_timeout must match ^[0-9]+(s|m|h)$, for example 30s, 10m, 1h."
+  }
+}
+
+variable "attachment_enabled" {
+  description = "Whether to attach the volume to the instance"
+  type        = bool
+  default     = true
 }

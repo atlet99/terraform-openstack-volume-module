@@ -22,6 +22,18 @@ variable "instance_id" {
   default     = "your-instance-uuid"
 }
 
+variable "create_volume" {
+  description = "Whether to create a new volume"
+  type        = bool
+  default     = true
+}
+
+variable "existing_volume_id" {
+  description = "Existing volume ID when create_volume is false"
+  type        = string
+  default     = null
+}
+
 variable "description" {
   description = "A description of the volume"
   type        = string
@@ -171,4 +183,10 @@ variable "attachment_delete_timeout" {
   description = "Timeout for volume detachment operation"
   type        = string
   default     = "10m"
+}
+
+variable "attachment_enabled" {
+  description = "Whether to attach the volume to the instance"
+  type        = bool
+  default     = true
 }
