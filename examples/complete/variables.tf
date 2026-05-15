@@ -37,6 +37,12 @@ variable "metadata" {
   }
 }
 
+variable "ignore_metadata_changes" {
+  description = "Ignore external drift for volume metadata during plan/apply"
+  type        = bool
+  default     = true
+}
+
 variable "availability_zone" {
   description = "AZ where volume is available"
   type        = string

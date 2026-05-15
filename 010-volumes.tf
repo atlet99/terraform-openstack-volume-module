@@ -25,6 +25,25 @@ resource "openstack_blockstorage_volume_v3" "volume" {
       additional_properties = lookup(scheduler_hints.value, "additional_properties", null)
     }
   }
+
+  lifecycle {
+    ignore_changes = var.ignore_metadata_changes ? [metadata] : []
+
+    precondition {
+      condition     = var.size > 0
+      error_message = "size must be greater than 0."
+    }
+
+    precondition {
+      condition = length(compact([
+        var.snapshot_id,
+        var.source_vol_id,
+        var.image_id,
+        var.backup_id,
+      ])) <= 1
+      error_message = "Only one of snapshot_id, source_vol_id, image_id, backup_id can be set."
+    }
+  }
 }
 
 resource "openstack_compute_volume_attach_v2" "va" {

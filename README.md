@@ -46,11 +46,18 @@ module "volume-module" {
   region        = "RegionOne"
   description   = "Data volume for application"
   metadata      = { environment = "production" }
+  ignore_metadata_changes = true
   vendor_options = {
     ignore_volume_confirmation = true
   }
 }
 ```
+
+### Metadata Drift Handling
+
+By default, metadata drift is ignored (`ignore_metadata_changes = true`) to avoid unnecessary updates when metadata is changed externally (for example, by cloud policies or operators).
+
+Set `ignore_metadata_changes = false` if you need strict reconciliation of `metadata`.
 
 ## License
 
@@ -59,33 +66,34 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
 | <a name="requirement_openstack"></a> [openstack](#requirement\_openstack) | ~> 3.2.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_openstack"></a> [openstack](#provider\_openstack) | 3.2.0 |
+| ---- | ------- |
+| <a name="provider_openstack"></a> [openstack](#provider\_openstack) | ~> 3.2.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [openstack_blockstorage_volume_v3.volume](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest/docs/resources/blockstorage_volume_v3) | resource |
 | [openstack_compute_volume_attach_v2.va](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest/docs/resources/compute_volume_attach_v2) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | AZ where volume's available. | `string` | `""` | no |
 | <a name="input_backup_id"></a> [backup\_id](#input\_backup\_id) | The backup ID from which to create the volume | `string` | `null` | no |
 | <a name="input_consistency_group_id"></a> [consistency\_group\_id](#input\_consistency\_group\_id) | The consistency group to place the volume in | `string` | `null` | no |
 | <a name="input_description"></a> [description](#input\_description) | A description of the volume | `string` | `null` | no |
 | <a name="input_device"></a> [device](#input\_device) | Device path for attachment (e.g., /dev/vdc) | `string` | `null` | no |
 | <a name="input_enable_online_resize"></a> [enable\_online\_resize](#input\_enable\_online\_resize) | Allows extending attached volumes | `bool` | `true` | no |
+| <a name="input_ignore_metadata_changes"></a> [ignore\_metadata\_changes](#input\_ignore\_metadata\_changes) | Ignore external drift for volume metadata during plan/apply | `bool` | `true` | no |
 | <a name="input_image_id"></a> [image\_id](#input\_image\_id) | The image ID from which to create the volume | `string` | `null` | no |
 | <a name="input_instance_id"></a> [instance\_id](#input\_instance\_id) | ID of the instance to attach the volume to | `string` | n/a | yes |
 | <a name="input_metadata"></a> [metadata](#input\_metadata) | Metadata key/value pairs to associate with the volume | `map(string)` | `{}` | no |
@@ -105,7 +113,7 @@ This is an open source project under the [MIT](https://github.com/atlet99/terraf
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_attached_devices"></a> [attached\_devices](#output\_attached\_devices) | List of device paths for the attached volumes (depends on the hypervisor) |
 | <a name="output_attached_instance_ids"></a> [attached\_instance\_ids](#output\_attached\_instance\_ids) | List of IDs of the instances to which the volumes are attached |
 | <a name="output_attached_volume_ids"></a> [attached\_volume\_ids](#output\_attached\_volume\_ids) | List of IDs of the attached volumes |

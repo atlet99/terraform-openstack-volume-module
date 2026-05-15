@@ -66,6 +66,12 @@ variable "metadata" {
   default     = {}
 }
 
+variable "ignore_metadata_changes" {
+  description = "Ignore external drift for volume metadata during plan/apply"
+  type        = bool
+  default     = true
+}
+
 variable "consistency_group_id" {
   description = "The consistency group to place the volume in"
   type        = string
@@ -118,4 +124,9 @@ variable "volume_retype_policy" {
   description = "Migration policy when changing volume_type"
   type        = string
   default     = null
+
+  validation {
+    condition     = var.volume_retype_policy == null || contains(["never", "on-demand"], lower(var.volume_retype_policy))
+    error_message = "volume_retype_policy must be one of: never, on-demand."
+  }
 }
